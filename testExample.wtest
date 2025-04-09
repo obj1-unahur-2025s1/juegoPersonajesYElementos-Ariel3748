@@ -1,9 +1,135 @@
-import example.pepita
+import armas.*
+import jugadoresPersonajes.*
+import personajes.*
+import elementos.*
 
-describe "group of tests for pepita" {
 
-  test "pepita has initial energy" {
-    assert.equals(100, pepita.energy())
-  }
-
+//Castillo:
+test "Al recibir un ataque pierde en vida lo que tenga de ataque el arma " {
+    castillo.esAtacado(jabalina)
+    assert.equals(120, castillo.nivelDefensa())
 }
+
+test "Al ser trabajado por mario sube en 20 su defensa" {
+    castillo.recibirTrabajo()
+    assert.equals(170, castillo.nivelDefensa())
+}
+
+test "El maximo de vida que puede tener es de 200" {
+    castillo.recibirTrabajo()
+    castillo.recibirTrabajo()
+    castillo.recibirTrabajo()
+    castillo.recibirTrabajo()
+    castillo.recibirTrabajo()
+    assert.that(castillo.nivelDefensa() < 201)
+}
+
+//Aurora
+
+test "No muere al recibir un ataque de menos de 10 puntos" {
+    aurora.esAtacado(ballesta) //La ballesta realiza un ataque de 4 puntos
+    assert.that(aurora.estaViva())
+}
+
+test "Muere al recibir un ataque de mas de 10 puntos. RIP Aurora" {
+    aurora.esAtacado(jabalina)  //La jabalina realiza un ataque de 30 puntos
+    assert.notThat(aurora.estaViva())
+}
+
+//Tipa
+
+test "Crece 1m al recibir trabajo por parte de Mario" {
+    const altura = tipa.altura()
+    tipa.recibirTrabajo()
+    assert.equals(tipa.altura(), altura + 1)
+  
+}
+
+//Mario
+
+test "Recibe un 20% de los puntos de vida del castillo" {
+    //Mario inicia con 0 de valor recolectado
+    mario.encontrar(castillo) //Nivel de Defensa = 150
+    assert.equals(mario.valorRecolectado(), 30)
+}
+
+test "Recibe 15 unidades por trabajar a aurora" {
+   //Mario inicia con 0 de valor recolectado
+    mario.encontrar(aurora) //Nivel de Defensa = 150
+    assert.equals(mario.valorRecolectado(), 15)
+}
+
+test "Recibe el doble de puntos de la altura que tenga tipa" {
+    //Mario inicia con 0 de valor recolectado
+    //Tipa inicia con 8 de Altura
+    mario.encontrar(tipa) 
+    assert.equals(mario.valorRecolectado(), 16)
+}
+
+test "Mario es feliz cuando tiene que ser feliz" {
+    mario.encontrar(castillo)
+    assert.that(mario.esFeliz())
+}
+
+test "Mario es feliz cuando tiene que ser feliz: Puntos" {
+  mario.encontrar(aurora)
+  mario.encontrar(aurora)
+  mario.encontrar(aurora)
+  mario.encontrar(aurora)
+  mario.encontrar(aurora)
+  assert.that(mario.esFeliz())
+}
+
+test "Mario no es feliz todo el tiempo. Pobre mario" {
+    mario.encontrar(aurora)
+    assert.notThat(mario.esFeliz())
+}
+
+//Ballesta
+test "La ballesta con menos de 4 flechas deja de estar cargada" {
+    //Ballesta inicia con 10 flechas
+    ballesta.atacar()
+    ballesta.atacar()
+    ballesta.atacar()
+    ballesta.atacar()
+    ballesta.atacar()
+    ballesta.atacar()
+    ballesta.atacar()
+    assert.notThat(ballesta.estaCargada())  
+}
+
+//Jabalina
+
+test "La jabalina tiene un solo uso" {
+  jabalina.atacar()
+  assert.notThat(jabalina.estaCargada())
+}
+
+//Folki
+
+test "Floki puede cambiar de armas" {
+    //Al iniciar su arma es la ballesta
+    floki.cambiarArma(jabalina)
+    assert.equals(floki.arma(), jabalina)
+}
+
+test "Si las armas no tienen carga floki no puede atacar" {
+    floki.cambiarArma(jabalina)
+    jabalina.atacar()
+    floki.encontrar(aurora)
+    assert.that(aurora.estaViva())
+}
+
+test "Si las armas no tienen carga floki no puede atacar: Ballesta" {
+    ballesta.atacar()
+    ballesta.atacar()
+    ballesta.atacar()
+    ballesta.atacar()
+    ballesta.atacar()
+    ballesta.atacar()
+    ballesta.atacar()
+    floki.encontrar(castillo)
+    assert.equals(castillo.nivelDefensa(), 150)
+}
+
+//Luisa
